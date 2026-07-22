@@ -10,8 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>subscription-service</module>
-        <module>payment-gateway</module>
+        <module>backend</module>
     </modules>
 
     <properties>
