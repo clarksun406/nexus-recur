@@ -401,6 +401,22 @@ mark.settlement {
   color: #9c2f20;
 }
 
+mark.approved,
+mark.completed {
+  background: #dff7eb;
+  color: #11623f;
+}
+
+mark.processing {
+  background: #fff4d6;
+  color: #75520a;
+}
+
+mark.rejected {
+  background: #ffe4de;
+  color: #9c2f20;
+}
+
 @media (max-width: 900px) {
   .workspace,
   .workspace.single,

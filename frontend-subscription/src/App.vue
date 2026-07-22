@@ -3,7 +3,7 @@
     <header class="topbar">
       <div>
         <h1>订阅管理</h1>
-        <p>仪表盘、计划、订阅、钱包、权益</p>
+        <p>仪表盘、计划、订阅、钱包、结汇、权益</p>
       </div>
       <div class="status-pill" :class="{ online: app.health === 'connected' }">{{ healthText }}</div>
     </header>
@@ -13,6 +13,7 @@
       <RouterLink :class="{ active: route.name === 'plans' }" to="/plans">计划</RouterLink>
       <RouterLink :class="{ active: route.name === 'subscriptions' || route.name === 'subscription-detail' }" to="/subscriptions">订阅</RouterLink>
       <RouterLink :class="{ active: route.name === 'wallets' }" to="/wallets">钱包</RouterLink>
+      <RouterLink :class="{ active: route.name === 'settlements' }" to="/settlements">结汇</RouterLink>
       <RouterLink :class="{ active: route.name === 'entitlements' }" to="/entitlements">权益</RouterLink>
     </nav>
 

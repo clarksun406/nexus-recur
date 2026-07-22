@@ -77,5 +77,22 @@ export const api = {
   },
   walletTransactions(walletId, page = 1, limit = 20) {
     return request(`/v1/wallets/${walletId}/transactions?page=${page}&limit=${limit}`)
+  },
+  listSettlements(status = '', page = 1, limit = 20) {
+    const params = new URLSearchParams({ page, limit })
+    if (status) params.set('status', status)
+    return request(`/v1/settlements?${params.toString()}`)
+  },
+  initiateSettlement(payload) {
+    return request('/v1/settlements', { method: 'POST', body: JSON.stringify(payload) })
+  },
+  approveSettlement(id, approverId) {
+    return request(`/v1/settlements/${id}/approve`, { method: 'POST', body: JSON.stringify({ approverId }) })
+  },
+  rejectSettlement(id, approverId, reason) {
+    return request(`/v1/settlements/${id}/reject`, { method: 'POST', body: JSON.stringify({ approverId, reason }) })
+  },
+  getPaymentIntent(id) {
+    return request(`/v1/payments/intents/${id}`)
   }
 }
