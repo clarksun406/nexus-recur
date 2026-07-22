@@ -1,0 +1,8 @@
+CREATE TABLE merchants (
+    id VARCHAR(32) PRIMARY KEY,
+    name VARCHAR(128) NOT NULL,
+    email VARCHAR(128),
+    kyc_status VARCHAR(16) NOT NULL DEFAULT 'none',
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    kyc_approved_at TIMESTAMP WITH TIME ZONE
+);

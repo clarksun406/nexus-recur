@@ -104,6 +104,32 @@ public class WalletService {
         transactionRepository.save(txn);
     }
 
+    @Transactional
+    public void freeze(String walletId, long amountCents) {
+        Wallet wallet = getEntity(walletId);
+        if (wallet.getBalanceCents() < amountCents) {
+            throw new BusinessException("INSUFFICIENT_BALANCE", "cannot freeze: insufficient balance", HttpStatus.BAD_REQUEST);
+        }
+        wallet.setBalanceCents(wallet.getBalanceCents() - (int) amountCents);
+        wallet.setPendingBalanceCents(wallet.getPendingBalanceCents() + (int) amountCents);
+        walletRepository.save(wallet);
+    }
+
+    @Transactional
+    public void unfreeze(String walletId, long amountCents) {
+        Wallet wallet = getEntity(walletId);
+        wallet.setPendingBalanceCents(wallet.getPendingBalanceCents() - (int) amountCents);
+        wallet.setBalanceCents(wallet.getBalanceCents() + (int) amountCents);
+        walletRepository.save(wallet);
+    }
+
+    @Transactional
+    public void settlePending(String walletId, long amountCents) {
+        Wallet wallet = getEntity(walletId);
+        wallet.setPendingBalanceCents(wallet.getPendingBalanceCents() - (int) amountCents);
+        walletRepository.save(wallet);
+    }
+
     private Wallet createWallet(String merchantId, String currency) {
         Wallet wallet = new Wallet();
         wallet.setId(idGenerator.next("wal"));

@@ -11,7 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Service
@@ -67,9 +66,7 @@ public class SettlementService {
 
         settlementRepository.save(settlement);
 
-        walletService.applyToWallet(merchantId, wallet.getCurrency(),
-                BigDecimal.valueOf(-request.amountCents(), 2), WalletTransactionType.settlement,
-                "Settlement initiation: " + settlement.getId(), "settlement", settlement.getId());
+        walletService.freeze(request.walletId(), request.amountCents());
 
         eventService.record(null, "settlement_initiated", "api",
                 "{\"settlementId\":\"" + settlement.getId() + "\",\"amount\":" + request.amountCents() + "}");
@@ -101,10 +98,7 @@ public class SettlementService {
         settlement.setRejectionReason(reason);
         settlementRepository.save(settlement);
 
-        Wallet wallet = walletService.getEntity(settlement.getWalletId());
-        walletService.applyToWallet(settlement.getMerchantId(), wallet.getCurrency(),
-                BigDecimal.valueOf(settlement.getAmountCents(), 2), WalletTransactionType.adjustment,
-                "Settlement rejected refund: " + settlementId, "settlement", settlementId);
+        walletService.unfreeze(settlement.getWalletId(), settlement.getAmountCents());
 
         return toResponse(settlement);
     }
@@ -118,6 +112,7 @@ public class SettlementService {
         settlement.setStatus(SettlementStatus.completed);
         settlement.setCompletedAt(OffsetDateTime.now());
         settlementRepository.save(settlement);
+        walletService.settlePending(settlement.getWalletId(), settlement.getAmountCents());
         return toResponse(settlement);
     }
 
