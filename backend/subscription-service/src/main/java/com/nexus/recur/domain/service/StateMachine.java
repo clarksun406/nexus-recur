@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class StateMachine {
     private static final Map<SubscriptionStatus, Set<SubscriptionStatus>> ALLOWED = Map.of(
             SubscriptionStatus.pending, Set.of(SubscriptionStatus.trialing, SubscriptionStatus.active, SubscriptionStatus.canceled, SubscriptionStatus.expired),
-            SubscriptionStatus.trialing, Set.of(SubscriptionStatus.active, SubscriptionStatus.paused, SubscriptionStatus.scheduled_cancel, SubscriptionStatus.canceled, SubscriptionStatus.expired),
+            SubscriptionStatus.trialing, Set.of(SubscriptionStatus.active, SubscriptionStatus.past_due, SubscriptionStatus.paused, SubscriptionStatus.scheduled_cancel, SubscriptionStatus.canceled, SubscriptionStatus.expired),
             SubscriptionStatus.active, Set.of(SubscriptionStatus.past_due, SubscriptionStatus.paused, SubscriptionStatus.scheduled_cancel, SubscriptionStatus.canceled, SubscriptionStatus.expired),
             SubscriptionStatus.past_due, Set.of(SubscriptionStatus.active, SubscriptionStatus.canceled, SubscriptionStatus.expired),
             SubscriptionStatus.paused, Set.of(SubscriptionStatus.active, SubscriptionStatus.canceled, SubscriptionStatus.expired),

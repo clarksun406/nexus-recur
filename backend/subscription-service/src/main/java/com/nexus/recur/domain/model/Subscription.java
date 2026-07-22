@@ -43,6 +43,7 @@ public class Subscription {
     private int retryCount;
     @Column(length = 64)
     private String lastDeclineCode;
+    private OffsetDateTime nextRetryAt;
     @Column(length = 64)
     private String paymentMethodId;
     @Column(nullable = false)
@@ -85,6 +86,8 @@ public class Subscription {
     public void setRetryCount(int retryCount) { this.retryCount = retryCount; }
     public String getLastDeclineCode() { return lastDeclineCode; }
     public void setLastDeclineCode(String lastDeclineCode) { this.lastDeclineCode = lastDeclineCode; }
+    public OffsetDateTime getNextRetryAt() { return nextRetryAt; }
+    public void setNextRetryAt(OffsetDateTime nextRetryAt) { this.nextRetryAt = nextRetryAt; }
     public String getPaymentMethodId() { return paymentMethodId; }
     public void setPaymentMethodId(String paymentMethodId) { this.paymentMethodId = paymentMethodId; }
     public OffsetDateTime getCreatedAt() { return createdAt; }

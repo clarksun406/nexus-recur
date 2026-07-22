@@ -15,5 +15,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Stri
     Page<Subscription> findByUserIdAndStatus(String userId, SubscriptionStatus status, Pageable pageable);
     Optional<Subscription> findByExternalSubId(String externalSubId);
     List<Subscription> findByStatusAndCurrentPeriodEndBefore(SubscriptionStatus status, OffsetDateTime before);
+    List<Subscription> findByStatusAndTrialEndAtBefore(SubscriptionStatus status, OffsetDateTime before);
+    List<Subscription> findByStatusAndNextRetryAtBefore(SubscriptionStatus status, OffsetDateTime before);
     long countByStatus(SubscriptionStatus status);
 }
