@@ -1,0 +1,22 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:paymentgateway-test;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+
+gateway:
+  merchant-webhook-url: http://localhost:19999/noop
+  max-attempts: 3
+  connectors:
+    - provider: MOCK_ALPHA
+      weight: 100
+      enabled: true
+  circuit-breaker:
+    failure-threshold: 3
+    open-duration-seconds: 30

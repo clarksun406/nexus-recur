@@ -1,0 +1,25 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:paymentgateway;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+
+gateway:
+  merchant-webhook-url: ${MERCHANT_WEBHOOK_URL:http://localhost:8080/v1/webhooks/payment}
+  max-attempts: 3
+  connectors:
+    - provider: MOCK_ALPHA
+      weight: 70
+      enabled: true
+    - provider: MOCK_BETA
+      weight: 30
+      enabled: true
+  circuit-breaker:
+    failure-threshold: 3
+    open-duration-seconds: 30
