@@ -115,7 +115,7 @@ public class WalletService {
         return walletRepository.save(wallet);
     }
 
-    private Wallet getEntity(String walletId) {
+    public Wallet getEntity(String walletId) {
         return walletRepository.findById(walletId)
                 .orElseThrow(() -> new BusinessException("WALLET_NOT_FOUND", "wallet not found: " + walletId, HttpStatus.NOT_FOUND));
     }
