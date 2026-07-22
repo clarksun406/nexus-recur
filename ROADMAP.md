@@ -229,11 +229,11 @@ permission:
 | 认证授权集成 | 引入 flow-permission-client 依赖；自建 AuthFilter（Bearer Token → userId/merchantId request attribute）；API Key 实体 + bcrypt 存储；新增 V5 迁移脚本 seed 订阅域权限码。详见下文「认证授权复用方案」 |
 | 前端脚手架升级 | 引入 vue-router、pinia、组件目录结构、API 拦截器 |
 
-### Phase 1 — MVP 核心计费闭环（Week 3-10）
+### Phase 1 — MVP 核心计费闭环（Week 3-10）✅ DONE
 
 > PRD 里程碑：MVP 开发。目标：完成订阅计费引擎 + 税务 + 3 币种钱包 + 结汇通道。
 
-**1A. 订阅计费引擎（F01-F04, F07）**
+**1A. 订阅计费引擎（F01-F04, F07）** ✅ DONE
 
 | 工作项 | PRD 对应 | 验收标准 |
 |--------|----------|----------|
@@ -246,7 +246,7 @@ permission:
 | Proration 计算 | F01 | proration-charge-immediately / proration-charge / proration-none |
 | 税务计算 | Ch5 | tax_mode inclusive/exclusive/none，接入 TaxJar，EU VAT/UK VAT/US 州销售税 |
 
-**1B. 多币种钱包（F10-F11）**
+**1B. 多币种钱包（F10-F11）** ✅ DONE
 
 | 工作项 | PRD 对应 | 验收标准 |
 |--------|----------|----------|
@@ -254,7 +254,7 @@ permission:
 | 余额实时更新 | F11 | 收单后 ≤5 秒余额可见，pending_balance 冻结/解冻 |
 | 钱包流水记录 | F11 | 收入/支出/FX/结汇分类流水，可追溯 |
 
-**1C. 结汇回国通道（F16-F17）**
+**1C. 结汇回国通道（F16-F17）** ✅ DONE
 
 | 工作项 | PRD 对应 | 验收标准 |
 |--------|----------|----------|
@@ -270,18 +270,18 @@ permission:
 | 订阅管理页增强 | F22 | 详情页（扣款历史/用量/事件日志）、搜索/筛选/暂停/取消 |
 | 钱包管理页 | F23 | 按币种分组余额+流水，收入/支出/FX/结汇分类 |
 
-### Phase 2 — 种子客户与 MVP 上线（Week 11-15）
+### Phase 2 — 种子客户与 MVP 上线（Week 11-15）🚧 IN PROGRESS
 
 > PRD 里程碑：种子客户 + MVP 上线。
 
-| 工作项 | 详情 |
-|--------|------|
-| 沙箱环境 | 独立沙箱数据、sk_test_* 密钥、测试卡号支持 |
-| 审计日志完善 | 所有资金操作 + 权限操作 + 配置操作，含操作人/角色/IP/设备指纹，7 年保留 |
-| 可观测性 | Actuator 健康检查、Prometheus 指标、日志聚合 |
-| 安全加固 | TLS 1.2+、CSP、rate limiting、PCI DSS 合规审计 |
-| 种子客户接入 | 10-20 家种子客户，真实交易跑通闭环 |
-| MVP 上线 | 正式开放注册 |
+| 工作项 | 详情 | 状态 |
+|--------|------|------|
+| 沙箱环境 | 独立沙箱数据、sk_test_* 密钥、测试卡号支持（部署级隔离） | 待定 |
+| 审计日志完善 | AuditFilter 记录所有资金/权限/配置操作，含操作人/IP/UserAgent | ✅ |
+| 可观测性 | Actuator health/info/metrics/prometheus 端点 | ✅ |
+| 安全加固 | RateLimitFilter (120/min/IP) + SecurityHeadersFilter (CSP/HSTS/nosniff/DENY) | ✅ |
+| 种子客户接入 | 10-20 家种子客户，真实交易跑通闭环 | 待定 |
+| MVP 上线 | 正式开放注册 | 待定 |
 
 ### Phase 3 — Beta 功能（Week 16-24）
 
@@ -335,8 +335,12 @@ P0 功能是 MVP 的硬性门槛，必须在 Phase 1 全部完成。
 | PaymentGatewayClient 双适配器 | Mock（默认）/ Rest（调用 payment-gateway），@ConditionalOnProperty 切换 |
 | flow-permission-client 集成 | @CheckPermission 注解已加到所有 Controller，permission.enabled=false 时 no-op |
 | 出站 Webhook 框架 | 15 种事件类型、指数退避重试、HMAC 签名 |
-| Flyway 迁移 | V1 init + V2 wallet，生产 validate 模式 |
-| 前端脚手架 | Vue Router + Pinia + 5 个视图 + 响应式 CSS |
+| Flyway 迁移 | V1-V6（init → wallet → next_retry → settlements → merchants → audit_logs），生产 validate 模式 |
+| 前端脚手架 | Vue Router + Pinia + 6 个视图（含结汇）+ 响应式 CSS |
+| MIT 计费引擎 | 续期扣款 + 试用转付费 + 1/3/7/14 重试 + Dunning 3 封邮件 + 税务计算 |
+| 审计日志 | AuditFilter（POST/PUT/DELETE 敏感路径）+ AuditLog 实体 + 查询 API |
+| 可观测性 | Spring Boot Actuator：health/info/metrics/prometheus |
+| 安全加固 | RateLimitFilter (120 req/min/IP) + SecurityHeadersFilter (CSP/HSTS/nosniff/X-Frame DENY) |
 
 ---
 
