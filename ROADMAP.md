@@ -6,33 +6,34 @@
 
 ## 现状总结
 
-现有代码实现了一个 **Subscription MVP 骨架**，覆盖了 PRD 28 个功能点中的约 4 个（部分完成），整体完成度约 **15%**。
+现有代码实现了 **订阅平台 MVP + 支付编排引擎**，覆盖了 PRD 28 个功能点中的约 10 个（部分完成），整体完成度约 **35%**。
 
 ### 已有基础
 
 | 能力 | 对应 PRD | 完成度 |
 |------|----------|--------|
-| Plan CRUD + 归档 | F01 | 40% — 缺 billing_type/metered_config/tax_mode/license 字段，billing_cycle 枚举不一致 |
-| 订阅状态机 | F01-F04 | 60% — 8 种状态 + 流转守卫已实现，但缺 MIT 驱动、重试、dunning |
-| Webhook 接收（入站） | F03 间接 | 30% — 仅接收外部 webhook 驱动状态变更，无出站 webhook 推送 |
-| 发票记录 + 幂等 | F03 间接 | 40% — pay 事件幂等去重已实现，缺 tax 字段和 failed/refunded 状态 |
+| Plan CRUD + 归档 | F01 | 70% — billing_type/tax_mode/license 字段已加，billing_cycle 已对齐 |
+| 订阅状态机 | F01-F04 | 70% — 8 种状态 + 流转守卫 + 事件日志，缺 MIT 驱动、重试、dunning |
+| Webhook 接收+推送 | F03 间接 | 70% — 入站 9 种事件 + 出站推送（指数退避重试） |
+| 发票记录 + 幂等 | F03 间接 | 60% — pay 事件幂等去重，缺 tax 字段 |
 | 权益校验 | — | 80% — 按 userId 查有效订阅，返回 features |
-| DDD 架构 | — | 90% — 端口适配器风格，PaymentGatewayClient 接口可替换 |
-| 前端管理面板 | F21-F22 | 10% — 3 个 Tab（计划/订阅/权益），无仪表盘、无详情页、无权限 |
+| DDD 架构 | — | 95% — 端口适配器风格，PaymentGatewayClient 接口 + Mock/Rest 双适配器 |
+| 支付编排引擎 | F02/F08 | 60% — Strategy+Dispatcher+Routing+CircuitBreaker+Failover，Mock 通道已跑通 |
+| 多币种钱包 | F10-F11 | 50% — Wallet 实体 + 余额 + 流水 + 自动开户，缺 KYC/pending 冻结 |
+| 前端管理控制台 | F21-F23 | 70% — Dashboard + 订阅详情 + 钱包页 + 计划 + 权益，Vue Router + Pinia |
+| 认证授权 | Ch3 | 60% — @CheckPermission 集成 + AuthFilter + API Key 实体，permission 默认关闭 |
+| 数据库迁移 | — | 90% — Flyway V1+V2，生产 validate 模式 |
 
 ### 完全缺失
 
-- 多币种钱包（F10-F15）— 0%
 - 结汇回国通道（F16-F20）— 0%
 - 客户自助门户（F27）— 0%
 - License Key 管理（F28）— 0%
-- 认证授权（Ch3）— 可复用 flow-permission 模块，见下文「认证授权复用方案」
 - 用量计费（F05）— 0%
 - 自动重试与 dunning（F04, F06）— 0%
 - 税务计算（Ch5）— 0%
-- 开发者中心（F25）— 0%
 - 对账报表（F24）— 0%
-- 定时调度（续期/过期/试用到期/到期取消）— 0%
+- 同币种付款 / 换汇（F12-F13）— 0%
 
 ---
 
@@ -214,7 +215,7 @@ permission:
 
 ## 分阶段路线图
 
-### Phase 0 — 技术债务清理与对齐（Week 1-2）
+### Phase 0 — 技术债务清理与对齐（Week 1-2）✅ DONE
 
 > 对齐 PRD 数据模型和 API 规范，为后续功能开发扫清障碍。
 
@@ -261,7 +262,7 @@ permission:
 | Owner 审批流程 | F17 | >$10K 需 Owner 审批，审批后提交持牌机构，T+1~T+2 到账 |
 | 合规校验 | F16 | 交易背景金额匹配、银行账户验证、制裁名单筛查 |
 
-**1D. 管理控制台基础（F21-F23）**
+**1D. 管理控制台基础（F21-F23）** ✅ DONE
 
 | 工作项 | PRD 对应 | 验收标准 |
 |--------|----------|----------|
@@ -319,12 +320,23 @@ permission:
 
 | 优先级 | 功能数 | 已完成 | 部分完成 | 未开始 |
 |--------|--------|--------|----------|--------|
-| P0 | 11 | 0 | 3（F01, F07, F22） | 8 |
-| P1 | 9 | 0 | 0 | 9 |
+| P0 | 11 | 1（F21） | 5（F01, F02/F08编排, F07, F10, F11, F22, F23） | 5 |
+| P1 | 9 | 0 | 1（F25 API Key） | 8 |
 | P2 | 8 | 0 | 0 | 8 |
-| **合计** | **28** | **0** | **3** | **25** |
+| **合计** | **28** | **1** | **6** | **21** |
 
 P0 功能是 MVP 的硬性门槛，必须在 Phase 1 全部完成。
+
+### 已完成基础设施
+
+| 模块 | 说明 |
+|------|------|
+| payment-gateway | 独立支付编排引擎：Strategy + Dispatcher + RoutingEngine + CircuitBreaker + FailoverPolicy，2 个 Mock 通道 |
+| PaymentGatewayClient 双适配器 | Mock（默认）/ Rest（调用 payment-gateway），@ConditionalOnProperty 切换 |
+| flow-permission-client 集成 | @CheckPermission 注解已加到所有 Controller，permission.enabled=false 时 no-op |
+| 出站 Webhook 框架 | 15 种事件类型、指数退避重试、HMAC 签名 |
+| Flyway 迁移 | V1 init + V2 wallet，生产 validate 模式 |
+| 前端脚手架 | Vue Router + Pinia + 5 个视图 + 响应式 CSS |
 
 ---
 
