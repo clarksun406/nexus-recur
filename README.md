@@ -6,13 +6,15 @@
 
 ```
 nexus-recur/
-├── pom.xml                    Maven parent (multi-module)
-├── subscription-service/      订阅业务服务 (port 8080)
-├── payment-gateway/           支付编排引擎 (port 8081)
-├── frontend-subscription/     Vue 3 管理控制台
-├── docker-compose.yml         PostgreSQL 本地环境
-├── ROADMAP.md                 分阶段实施路线
-└── USAGE.md                   API 使用文档
+├── pom.xml                        Maven root (modules: [backend])
+├── backend/
+│   ├── pom.xml                    Aggregator (nexus-recur-backend)
+│   ├── subscription-service/      订阅业务服务 (port 8080)
+│   └── payment-gateway/           支付编排引擎 (port 8081)
+├── frontend-subscription/         Vue 3 管理控制台
+├── docker-compose.yml             PostgreSQL 本地环境
+├── ROADMAP.md                     分阶段实施路线
+└── USAGE.md                       API 使用文档
 ```
 
 ## Architecture
@@ -51,13 +53,21 @@ subscription-service (port 8080)          payment-gateway (port 8081)
 **subscription-service:**
 - Plans: CRUD + archive (`/v1/plans`)
 - Subscriptions: create/list/detail/cancel/pause/resume/upgrade (`/v1/subscriptions`)
+- MIT Billing: 周期扣款调度 + 1/3/7/14 自动重试 + 试用转付费
+- Dunning: 3 封邮件序列（失败/最后机会/取消通知）
+- Tax: inclusive/exclusive/none 模式，国别税率（UK 20%, DE/FR 21% 等）
 - Invoices + Events: per-subscription history
 - Entitlements: check by userId (`/v1/entitlements/check`)
-- Wallets: multi-currency balance + transactions (`/v1/wallets`)
+- Wallets: multi-currency balance + freeze/unfreeze + transactions (`/v1/wallets`)
+- Merchants: 注册 + KYC 审核 + 自动开户 (`/v1/merchants`)
+- Settlements: 结汇发起/审批/拒绝/完成，>$10K 需审批 (`/v1/settlements`)
 - Dashboard: MRR, charge success rate, pending actions (`/v1/dashboard/stats`)
 - Webhooks: inbound (subscription events) + outbound (event delivery with retry)
 - API Keys: generate/list/revoke (`/v1/api-keys`)
+- Audit Log: 敏感操作审计 + 查询 (`/v1/audit-logs`)
 - Permission: `@CheckPermission` via flow-permission-client (optional, disabled by default)
+- Observability: Actuator health/info/metrics/prometheus (`/actuator`)
+- Security: RateLimitFilter (120 req/min/IP) + SecurityHeadersFilter (CSP/HSTS/nosniff)
 
 **payment-gateway:**
 - Payment Intents: create → confirm → succeeded/failed (`/v1/payments/intents`)
@@ -77,10 +87,10 @@ Response format (subscription-service):
 docker compose up -d postgres
 
 # subscription-service (port 8080)
-mvn -pl subscription-service spring-boot:run
+mvn -pl backend/subscription-service spring-boot:run
 
 # payment-gateway (port 8081)
-mvn -pl payment-gateway spring-boot:run
+mvn -pl backend/payment-gateway spring-boot:run
 
 # frontend (port 5173, proxies /api → 8080)
 cd frontend-subscription && npm install && npm run dev
@@ -89,7 +99,7 @@ cd frontend-subscription && npm install && npm run dev
 Enable payment orchestration (subscription-service calls payment-gateway):
 
 ```bash
-PAYMENT_GATEWAY_ENABLED=true mvn -pl subscription-service spring-boot:run
+PAYMENT_GATEWAY_ENABLED=true mvn -pl backend/subscription-service spring-boot:run
 ```
 
 Without this flag, subscription-service uses its built-in MockPaymentGatewayClient.
@@ -101,11 +111,12 @@ Vue 3 + Pinia + Vue Router. Views:
 - Plans: create/archive plans
 - Subscriptions: list + detail page (invoices, events, actions)
 - Wallets: multi-currency balances + transaction history
+- Settlements: 结汇申请列表 + 发起/审批操作
 - Entitlements: check user access
 
 ## Database
 
-PostgreSQL (prod), H2 (test). Flyway migrations in `subscription-service/src/main/resources/db/migration/`.
+PostgreSQL (prod), H2 (test). Flyway migrations in `backend/subscription-service/src/main/resources/db/migration/` (V1-V6).
 
 ```text
 DB_URL=jdbc:postgresql://localhost:5432/nexus_recur
