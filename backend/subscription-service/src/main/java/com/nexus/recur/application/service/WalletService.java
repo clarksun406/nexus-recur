@@ -82,6 +82,7 @@ public class WalletService {
     public void applyToWallet(String merchantId, String currency, BigDecimal amount, WalletTransactionType type,
                                String description, String referenceType, String referenceId) {
         String normalizedCurrency = currency == null || currency.isBlank() ? "USD" : currency.toUpperCase();
+        com.nexus.recur.domain.model.SupportedCurrencies.validate(normalizedCurrency);
         Wallet wallet = walletRepository.findByMerchantIdAndCurrency(merchantId, normalizedCurrency)
                 .orElseGet(() -> createWallet(merchantId, normalizedCurrency));
         int amountCents = toCents(amount);

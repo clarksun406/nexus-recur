@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 public class MerchantService {
 
-    private static final List<String> AUTO_CURRENCIES = List.of("USD", "EUR", "GBP");
+    private static final List<String> AUTO_CURRENCIES = List.of("USD", "EUR", "GBP", "CAD", "AUD", "JPY", "SGD", "HKD");
 
     private final MerchantRepository merchantRepository;
     private final WalletService walletService;

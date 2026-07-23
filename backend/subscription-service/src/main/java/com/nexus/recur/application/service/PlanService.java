@@ -76,7 +76,9 @@ public class PlanService {
         plan.setProductId(request.productId());
         plan.setBillingCycle(request.billingCycle());
         plan.setPriceCents(toCents(request.price()));
-        plan.setCurrency(request.currency() == null || request.currency().isBlank() ? "USD" : request.currency().toUpperCase());
+        String currency = request.currency() == null || request.currency().isBlank() ? "USD" : request.currency().toUpperCase();
+        com.nexus.recur.domain.model.SupportedCurrencies.validate(currency);
+        plan.setCurrency(currency);
         plan.setTrialDays(request.trialDays() == null ? 0 : request.trialDays());
         plan.setFeaturesJson(jsonService.write(request.features()));
         if (request.status() != null) {
