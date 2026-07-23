@@ -330,7 +330,7 @@ P0 功能是 MVP 的硬性门槛，必须在 Phase 1 全部完成。
 | flow-permission-client 集成 | @CheckPermission 注解已加到所有 Controller，permission.enabled=false 时 no-op |
 | 出站 Webhook 框架 | 15 种事件类型、指数退避重试、HMAC 签名 |
 | Flyway 迁移 | V1-V14（init → wallet → next_retry → settlements → merchants → audit_logs → data_model_completion → fx_transactions → portal_tokens → payment_orders → license_keys → routing_rules → virtual_cards → legal_entities），生产 validate 模式 |
-| 前端脚手架 | Vue Router + Pinia + 6 个视图（含结汇）+ 响应式 CSS |
+| 前端脚手架 | Vue Router + Pinia + 16 个视图（Dashboard/Plans/Subscriptions/Wallets/Settlements/Entitlements/Developer/PaymentOrders/Usage/FX/Reconciliation/Routing/VirtualCards/Entities/Licenses）+ 响应式 CSS |
 | MIT 计费引擎 | 续期扣款 + 试用转付费 + 1/3/7/14 重试 + Dunning 3 封邮件 + 税务计算 |
 | 审计日志 | AuditFilter（POST/PUT/DELETE 敏感路径）+ AuditLog 实体 + 查询 API |
 | 可观测性 | Spring Boot Actuator：health/info/metrics/prometheus |

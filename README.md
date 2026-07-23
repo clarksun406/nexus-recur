@@ -120,14 +120,22 @@ Without this flag, subscription-service uses its built-in MockPaymentGatewayClie
 
 ## Frontend
 
-Vue 3 + Pinia + Vue Router. Views:
+Vue 3 + Pinia + Vue Router. Views (16):
 - Dashboard: metric cards (MRR, active subs, charge rate), revenue by currency, pending actions, recent events
-- Plans: create/archive plans
+- Plans: create/archive plans + tier 管理
 - Subscriptions: list + detail page (invoices, events, actions)
 - Wallets: multi-currency balances + transaction history
 - Settlements: 结汇申请列表 + 发起/审批操作
 - Entitlements: check user access
 - Developer: API Keys 生成/吊销 + Webhook 端点管理/投递日志
+- Payment Orders: SEPA/ACH/Wire 付款 + 制裁筛查 + 审批
+- Usage: 用量上报 + 按订阅查询
+- FX: 多币种换汇 + 交易历史
+- Reconciliation: 月度对账报告 + CSV 导出
+- Routing: 智能路由规则 CRUD + 策略配置 + 路由测试
+- Virtual Cards: 虚拟卡发行/冻结/关闭 + 消费限额
+- Entities: 多主体管理 + 商户分配
+- Licenses: License Key 生成/校验/暂停/吊销
 
 ## Database
 
