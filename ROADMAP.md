@@ -30,7 +30,6 @@
 - License Key 管理（F28）— 0%
 - 自动重试与 dunning（F04, F06）— 0%
 - 税务计算（Ch5）— 0%
-- 同币种付款（F12）— 0%
 
 ---
 
@@ -288,12 +287,12 @@ permission:
 |--------|----------|----------|------|
 | 用量计费 | F05 | POST /v1/usage + /v1/usage/batch，幂等键，周期末结算，异常检测 | ✅ |
 | 智能重试 | F06 | 基于 BIN + decline_code + 时间窗口模型，+5pp 以上 | 待定 |
-| 同币种付款 | F12 | SEPA/ACH/Wire 清算，制裁筛查，审批流程 | 待定 |
+| 同币种付款 | F12 | SEPA/ACH/Wire 清算，制裁筛查，审批流程 | ✅ |
 | 主动换汇 | F13 | 点差 ≤0.5%，汇率异常保护，换汇记录 | ✅ |
 | 客户自助门户 | F27 | 魔法链接登录，查看订阅/发票，更新支付，取消/恢复 | ✅ |
 | 对账报表 | F24 | 月度对账报告，CSV/Excel 导出，对账 API | ✅ |
-| 开发者中心 | F25 | API Key 管理，Webhook 配置 UI，调用日志，交互式文档 | 待定 |
-| 扩展币种 | F15 部分 | 扩展至 10+ 币种 | 待定 |
+| 开发者中心 | F25 | API Key 管理，Webhook 配置 UI，调用日志，交互式文档 | ✅ |
+| 扩展币种 | F15 部分 | 扩展至 10+ 币种 | ✅ |
 
 ### Phase 4 — GA（Week 25-36）
 
@@ -332,7 +331,7 @@ P0 功能是 MVP 的硬性门槛，必须在 Phase 1 全部完成。
 | PaymentGatewayClient 双适配器 | Mock（默认）/ Rest（调用 payment-gateway），@ConditionalOnProperty 切换 |
 | flow-permission-client 集成 | @CheckPermission 注解已加到所有 Controller，permission.enabled=false 时 no-op |
 | 出站 Webhook 框架 | 15 种事件类型、指数退避重试、HMAC 签名 |
-| Flyway 迁移 | V1-V9（init → wallet → next_retry → settlements → merchants → audit_logs → data_model_completion → fx_transactions → portal_tokens），生产 validate 模式 |
+| Flyway 迁移 | V1-V10（init → wallet → next_retry → settlements → merchants → audit_logs → data_model_completion → fx_transactions → portal_tokens → payment_orders），生产 validate 模式 |
 | 前端脚手架 | Vue Router + Pinia + 6 个视图（含结汇）+ 响应式 CSS |
 | MIT 计费引擎 | 续期扣款 + 试用转付费 + 1/3/7/14 重试 + Dunning 3 封邮件 + 税务计算 |
 | 审计日志 | AuditFilter（POST/PUT/DELETE 敏感路径）+ AuditLog 实体 + 查询 API |
@@ -343,6 +342,9 @@ P0 功能是 MVP 的硬性门槛，必须在 Phase 1 全部完成。
 | 对账报表（F24） | 月度对账报告 API（gross/net/tax/discount/成功率 by currency）+ CSV 导出 |
 | 主动换汇（F13） | FxTransaction 实体 + 50bps 点差 + 汇率异常保护（>10% 偏差拦截）+ 多币种钱包余额转换 |
 | 客户自助门户（F27） | 魔法链接（5 分钟有效 + 单次使用）+ 1 小时会话 + 查看订阅/发票/支付方式 + 取消/恢复订阅 |
+| 同币种付款（F12） | PaymentOrder 实体 + SEPA/ACH/Wire + 制裁筛查（14 国 + 关键词）+ >$5K Owner 审批 + 钱包冻结联动 |
+| 开发者中心（F25） | Webhook 端点 CRUD API + 投递日志分页 + 前端 DeveloperView（API Keys + Webhooks 双 tab） |
+| 扩展币种（F15） | 13 种 ISO 4217 货币 + USD 基准动态交叉汇率 + SupportedCurrencies 校验 + KYC 自动开 8 币种钱包 |
 
 ---
 

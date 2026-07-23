@@ -54,13 +54,22 @@ subscription-service (port 8080)          payment-gateway (port 8081)
 - Plans: CRUD + archive (`/v1/plans`)
 - Subscriptions: create/list/detail/cancel/pause/resume/upgrade (`/v1/subscriptions`)
 - MIT Billing: 周期扣款调度 + 1/3/7/14 自动重试 + 试用转付费
+- Usage Billing: 幂等上报 + 周期末结算（metered/tiered）+ 异常检测 (`/v1/usage`)
 - Dunning: 3 封邮件序列（失败/最后机会/取消通知）
-- Tax: inclusive/exclusive/none 模式，国别税率（UK 20%, DE/FR 21% 等）
+- Tax: inclusive/exclusive/none 模式，DB 税率查询 + 硬编码 fallback
 - Invoices + Events: per-subscription history
 - Entitlements: check by userId (`/v1/entitlements/check`)
+- Customers: CRUD (`/v1/customers`)
+- Payment Methods: list/create/set-default/revoke (`/v1/customers/{id}/payment-methods`)
+- Refunds: create/approve/list (`/v1/refunds`)
 - Wallets: multi-currency balance + freeze/unfreeze + transactions (`/v1/wallets`)
-- Merchants: 注册 + KYC 审核 + 自动开户 (`/v1/merchants`)
+- FX Exchange: 13 种货币换汇，50bps 点差，异常保护 (`/v1/fx`)
+- Payment Orders: SEPA/ACH/Wire 付款，制裁筛查，>$5K 审批 (`/v1/payment-orders`)
+- Merchants: 注册 + KYC 审核 + 自动开 8 币种钱包 (`/v1/merchants`)
 - Settlements: 结汇发起/审批/拒绝/完成，>$10K 需审批 (`/v1/settlements`)
+- Reconciliation: 月度对账报告 + CSV 导出 (`/v1/reconciliation`)
+- Customer Portal: 魔法链接登录 + 订阅/发票/支付方式自助管理 (`/v1/portal`)
+- Developer Center: Webhook 端点 CRUD + 投递日志 (`/v1/webhook-endpoints`)
 - Dashboard: MRR, charge success rate, pending actions (`/v1/dashboard/stats`)
 - Webhooks: inbound (subscription events) + outbound (event delivery with retry)
 - API Keys: generate/list/revoke (`/v1/api-keys`)
@@ -113,10 +122,11 @@ Vue 3 + Pinia + Vue Router. Views:
 - Wallets: multi-currency balances + transaction history
 - Settlements: 结汇申请列表 + 发起/审批操作
 - Entitlements: check user access
+- Developer: API Keys 生成/吊销 + Webhook 端点管理/投递日志
 
 ## Database
 
-PostgreSQL (prod), H2 (test). Flyway migrations in `backend/subscription-service/src/main/resources/db/migration/` (V1-V6).
+PostgreSQL (prod), H2 (test). Flyway migrations in `backend/subscription-service/src/main/resources/db/migration/` (V1-V10).
 
 ```text
 DB_URL=jdbc:postgresql://localhost:5432/nexus_recur
