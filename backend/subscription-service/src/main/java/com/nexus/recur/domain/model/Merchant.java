@@ -63,6 +63,9 @@ public class Merchant {
     @Column(length = 256)
     private String kycRejectedReason;
 
+    @Column(length = 32)
+    private String legalEntityId;
+
     @Column(nullable = false)
     private OffsetDateTime updatedAt = OffsetDateTime.now();
 
@@ -105,6 +108,8 @@ public class Merchant {
     public void setKycSubmittedAt(OffsetDateTime kycSubmittedAt) { this.kycSubmittedAt = kycSubmittedAt; }
     public String getKycRejectedReason() { return kycRejectedReason; }
     public void setKycRejectedReason(String kycRejectedReason) { this.kycRejectedReason = kycRejectedReason; }
+    public String getLegalEntityId() { return legalEntityId; }
+    public void setLegalEntityId(String legalEntityId) { this.legalEntityId = legalEntityId; }
     public OffsetDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(OffsetDateTime updatedAt) { this.updatedAt = updatedAt; }
 }
