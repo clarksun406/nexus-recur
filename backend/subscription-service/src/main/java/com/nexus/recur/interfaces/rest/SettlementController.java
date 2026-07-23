@@ -72,4 +72,24 @@ public class SettlementController {
         if (merchantId == null) merchantId = "merchant_default";
         return ApiResponse.ok(settlementService.batchInitiate(merchantId, requests));
     }
+
+    @GetMapping("/compliance-export")
+    @CheckPermission("settlement:export")
+    public void complianceExport(@RequestParam int year, @RequestParam int quarter,
+                                  HttpServletRequest httpRequest, jakarta.servlet.http.HttpServletResponse response) throws java.io.IOException {
+        String merchantId = (String) httpRequest.getAttribute("merchantId");
+        if (merchantId == null) merchantId = "merchant_default";
+        String csv = settlementService.complianceExport(merchantId, year, quarter);
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=compliance_" + year + "Q" + quarter + ".csv");
+        response.getWriter().write(csv);
+    }
+
+    @GetMapping("/quota")
+    @CheckPermission("settlement:read")
+    public ApiResponse<SettlementService.QuotaResponse> quota(HttpServletRequest httpRequest) {
+        String merchantId = (String) httpRequest.getAttribute("merchantId");
+        if (merchantId == null) merchantId = "merchant_default";
+        return ApiResponse.ok(settlementService.getQuota(merchantId));
+    }
 }

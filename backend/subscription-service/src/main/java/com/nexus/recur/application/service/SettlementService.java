@@ -17,6 +17,7 @@ import java.time.OffsetDateTime;
 public class SettlementService {
 
     private static final long APPROVAL_THRESHOLD_CENTS = 1_000_000; // $10,000
+    private static final long ANNUAL_QUOTA_CENTS = 500_000_000; // $5,000,000 annual SAFE quota
 
     private final SettlementRepository settlementRepository;
     private final WalletService walletService;
@@ -149,6 +150,51 @@ public class SettlementService {
                 .map(request -> initiate(merchantId, request))
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public String complianceExport(String merchantId, int year, int quarter) {
+        int startMonth = (quarter - 1) * 3 + 1;
+        OffsetDateTime start = OffsetDateTime.of(year, startMonth, 1, 0, 0, 0, 0, java.time.ZoneOffset.UTC);
+        OffsetDateTime end = start.plusMonths(3);
+        java.util.List<Settlement> settlements = settlementRepository.findByMerchantIdAndCreatedAtBetween(merchantId, start, end);
+
+        StringBuilder csv = new StringBuilder();
+        csv.append("id,amount_cents,currency,target_currency,bank_account,status,background_refs,created_at,completed_at\n");
+        for (Settlement s : settlements) {
+            csv.append(s.getId()).append(',')
+               .append(s.getAmountCents()).append(',')
+               .append(s.getCurrency()).append(',')
+               .append(s.getTargetCurrency()).append(',')
+               .append(escapeCsv(s.getBankAccount())).append(',')
+               .append(s.getStatus()).append(',')
+               .append(escapeCsv(s.getBackgroundRefs())).append(',')
+               .append(s.getCreatedAt()).append(',')
+               .append(s.getCompletedAt() != null ? s.getCompletedAt() : "")
+               .append('\n');
+        }
+        return csv.toString();
+    }
+
+    @Transactional(readOnly = true)
+    public QuotaResponse getQuota(String merchantId) {
+        int year = OffsetDateTime.now().getYear();
+        OffsetDateTime start = OffsetDateTime.of(year, 1, 1, 0, 0, 0, 0, java.time.ZoneOffset.UTC);
+        OffsetDateTime end = OffsetDateTime.of(year + 1, 1, 1, 0, 0, 0, 0, java.time.ZoneOffset.UTC);
+        java.util.List<Settlement> completed = settlementRepository
+                .findByMerchantIdAndStatusAndCreatedAtBetween(merchantId, SettlementStatus.completed, start, end);
+        long usedCents = completed.stream().mapToLong(Settlement::getAmountCents).sum();
+        return new QuotaResponse(ANNUAL_QUOTA_CENTS, usedCents, ANNUAL_QUOTA_CENTS - usedCents, year);
+    }
+
+    private String escapeCsv(String value) {
+        if (value == null) return "";
+        if (value.contains(",") || value.contains("\"")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
+    }
+
+    public record QuotaResponse(long annualLimitCents, long usedCents, long remainingCents, int year) {}
 
     private Settlement getEntity(String settlementId) {
         return settlementRepository.findById(settlementId)
