@@ -137,6 +137,19 @@ public class SettlementService {
         return toResponse(getEntity(settlementId));
     }
 
+    @Transactional
+    public java.util.List<SettlementResponse> batchInitiate(String merchantId, java.util.List<InitiateSettlementRequest> requests) {
+        if (requests == null || requests.isEmpty()) {
+            throw new BusinessException("EMPTY_BATCH", "Batch settlement requires at least one request");
+        }
+        if (requests.size() > 50) {
+            throw new BusinessException("BATCH_TOO_LARGE", "Maximum 50 settlements per batch");
+        }
+        return requests.stream()
+                .map(request -> initiate(merchantId, request))
+                .toList();
+    }
+
     private Settlement getEntity(String settlementId) {
         return settlementRepository.findById(settlementId)
                 .orElseThrow(() -> new BusinessException("SETTLEMENT_NOT_FOUND", "settlement not found: " + settlementId));

@@ -62,4 +62,14 @@ public class SettlementController {
     public ApiResponse<SettlementResponse> complete(@PathVariable String settlementId) {
         return ApiResponse.ok(settlementService.complete(settlementId));
     }
+
+    @PostMapping("/batch")
+    @CheckPermission("settlement:initiate")
+    public ApiResponse<java.util.List<SettlementResponse>> batchInitiate(
+            @RequestBody java.util.List<InitiateSettlementRequest> requests,
+            HttpServletRequest httpRequest) {
+        String merchantId = (String) httpRequest.getAttribute("merchantId");
+        if (merchantId == null) merchantId = "merchant_default";
+        return ApiResponse.ok(settlementService.batchInitiate(merchantId, requests));
+    }
 }
