@@ -27,13 +27,10 @@
 ### 完全缺失
 
 - 结汇回国通道（F16-F20）— 0%
-- 客户自助门户（F27）— 0%
 - License Key 管理（F28）— 0%
-- 用量计费（F05）— 0%
 - 自动重试与 dunning（F04, F06）— 0%
 - 税务计算（Ch5）— 0%
-- 对账报表（F24）— 0%
-- 同币种付款 / 换汇（F12-F13）— 0%
+- 同币种付款（F12）— 0%
 
 ---
 
@@ -283,20 +280,20 @@ permission:
 | 种子客户接入 | 10-20 家种子客户，真实交易跑通闭环 | 待定 |
 | MVP 上线 | 正式开放注册 | 待定 |
 
-### Phase 3 — Beta 功能（Week 16-24）
+### Phase 3 — Beta 功能（Week 16-24）🚧 IN PROGRESS
 
 > PRD 里程碑：Beta 开发。
 
-| 工作项 | PRD 对应 | 验收标准 |
-|--------|----------|----------|
-| 用量计费 | F05 | POST /v1/usage + /v1/usage/batch，幂等键，周期末结算，异常检测 |
-| 智能重试 | F06 | 基于 BIN + decline_code + 时间窗口模型，+5pp 以上 |
-| 同币种付款 | F12 | SEPA/ACH/Wire 清算，制裁筛查，审批流程 |
-| 主动换汇 | F13 | 点差 ≤0.5%，汇率异常保护，换汇记录 |
-| 客户自助门户 | F27 | 魔法链接登录，查看订阅/发票，更新支付，取消/恢复 |
-| 对账报表 | F24 | 月度对账报告，CSV/Excel 导出，对账 API |
-| 开发者中心 | F25 | API Key 管理，Webhook 配置 UI，调用日志，交互式文档 |
-| 扩展币种 | F15 部分 | 扩展至 10+ 币种 |
+| 工作项 | PRD 对应 | 验收标准 | 状态 |
+|--------|----------|----------|------|
+| 用量计费 | F05 | POST /v1/usage + /v1/usage/batch，幂等键，周期末结算，异常检测 | ✅ |
+| 智能重试 | F06 | 基于 BIN + decline_code + 时间窗口模型，+5pp 以上 | 待定 |
+| 同币种付款 | F12 | SEPA/ACH/Wire 清算，制裁筛查，审批流程 | 待定 |
+| 主动换汇 | F13 | 点差 ≤0.5%，汇率异常保护，换汇记录 | ✅ |
+| 客户自助门户 | F27 | 魔法链接登录，查看订阅/发票，更新支付，取消/恢复 | ✅ |
+| 对账报表 | F24 | 月度对账报告，CSV/Excel 导出，对账 API | ✅ |
+| 开发者中心 | F25 | API Key 管理，Webhook 配置 UI，调用日志，交互式文档 | 待定 |
+| 扩展币种 | F15 部分 | 扩展至 10+ 币种 | 待定 |
 
 ### Phase 4 — GA（Week 25-36）
 
@@ -335,13 +332,17 @@ P0 功能是 MVP 的硬性门槛，必须在 Phase 1 全部完成。
 | PaymentGatewayClient 双适配器 | Mock（默认）/ Rest（调用 payment-gateway），@ConditionalOnProperty 切换 |
 | flow-permission-client 集成 | @CheckPermission 注解已加到所有 Controller，permission.enabled=false 时 no-op |
 | 出站 Webhook 框架 | 15 种事件类型、指数退避重试、HMAC 签名 |
-| Flyway 迁移 | V1-V7（init → wallet → next_retry → settlements → merchants → audit_logs → data_model_completion），生产 validate 模式 |
+| Flyway 迁移 | V1-V9（init → wallet → next_retry → settlements → merchants → audit_logs → data_model_completion → fx_transactions → portal_tokens），生产 validate 模式 |
 | 前端脚手架 | Vue Router + Pinia + 6 个视图（含结汇）+ 响应式 CSS |
 | MIT 计费引擎 | 续期扣款 + 试用转付费 + 1/3/7/14 重试 + Dunning 3 封邮件 + 税务计算 |
 | 审计日志 | AuditFilter（POST/PUT/DELETE 敏感路径）+ AuditLog 实体 + 查询 API |
 | 可观测性 | Spring Boot Actuator：health/info/metrics/prometheus |
 | 安全加固 | RateLimitFilter (120 req/min/IP) + SecurityHeadersFilter (CSP/HSTS/nosniff/X-Frame DENY) |
 | 数据模型补全 | V7：Customer/PaymentMethod/Refund/UsageRecord/InvoiceLineItem/TaxRate/PlanTier/RetryLog 8 张新表 + Subscription/Invoice/Wallet/Settlement/Merchant 5 表字段扩展，支撑 F02/F05/F09/F27/Ch5 |
+| 用量计费（F05） | UsageRecord 幂等上报 + 周期末结算（metered 单价 / tiered 阶梯）+ 异常用量检测（>3x 上期）+ UsageBillingService 定时任务 |
+| 对账报表（F24） | 月度对账报告 API（gross/net/tax/discount/成功率 by currency）+ CSV 导出 |
+| 主动换汇（F13） | FxTransaction 实体 + 50bps 点差 + 汇率异常保护（>10% 偏差拦截）+ 多币种钱包余额转换 |
+| 客户自助门户（F27） | 魔法链接（5 分钟有效 + 单次使用）+ 1 小时会话 + 查看订阅/发票/支付方式 + 取消/恢复订阅 |
 
 ---
 

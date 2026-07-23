@@ -18,5 +18,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Stri
     List<Subscription> findByStatusAndTrialEndAtBefore(SubscriptionStatus status, OffsetDateTime before);
     List<Subscription> findByStatusAndNextRetryAtBefore(SubscriptionStatus status, OffsetDateTime before);
     List<Subscription> findByStatusInAndCurrentPeriodEndBefore(List<SubscriptionStatus> statuses, OffsetDateTime before);
+    List<Subscription> findByCustomerId(String customerId);
     long countByStatus(SubscriptionStatus status);
 }
