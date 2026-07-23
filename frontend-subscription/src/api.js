@@ -165,5 +165,69 @@ export const api = {
   },
   deletePlanTier(planId, tierId) {
     return request(`/v1/plans/${planId}/tiers/${tierId}`, { method: 'DELETE' })
+  },
+  listRoutingRules() {
+    return request('/v1/routing-rules')
+  },
+  createRoutingRule(payload) {
+    return request('/v1/routing-rules', { method: 'POST', body: JSON.stringify(payload) })
+  },
+  updateRoutingRule(id, payload) {
+    return request(`/v1/routing-rules/${id}`, { method: 'PUT', body: JSON.stringify(payload) })
+  },
+  deleteRoutingRule(id) {
+    return request(`/v1/routing-rules/${id}`, { method: 'DELETE' })
+  },
+  resolveRouting(payload) {
+    return request('/v1/routing-rules/resolve', { method: 'POST', body: JSON.stringify(payload) })
+  },
+  listVirtualCards(page = 1, limit = 20) {
+    return request(`/v1/virtual-cards?page=${page}&limit=${limit}`)
+  },
+  issueVirtualCard(payload) {
+    return request('/v1/virtual-cards', { method: 'POST', body: JSON.stringify(payload) })
+  },
+  freezeVirtualCard(id) {
+    return request(`/v1/virtual-cards/${id}/freeze`, { method: 'POST' })
+  },
+  unfreezeVirtualCard(id) {
+    return request(`/v1/virtual-cards/${id}/unfreeze`, { method: 'POST' })
+  },
+  closeVirtualCard(id) {
+    return request(`/v1/virtual-cards/${id}/close`, { method: 'POST' })
+  },
+  listLegalEntities(country = '') {
+    const query = country ? `?country=${encodeURIComponent(country)}` : ''
+    return request(`/v1/legal-entities${query}`)
+  },
+  createLegalEntity(payload) {
+    return request('/v1/legal-entities', { method: 'POST', body: JSON.stringify(payload) })
+  },
+  updateLegalEntity(id, payload) {
+    return request(`/v1/legal-entities/${id}`, { method: 'PUT', body: JSON.stringify(payload) })
+  },
+  assignMerchantToEntity(entityId, merchantId) {
+    return request(`/v1/legal-entities/${entityId}/merchants`, { method: 'POST', body: JSON.stringify({ merchantId }) })
+  },
+  listLicenses(page = 1, limit = 20) {
+    return request(`/v1/licenses?page=${page}&limit=${limit}`)
+  },
+  generateLicense(payload) {
+    return request('/v1/licenses', { method: 'POST', body: JSON.stringify(payload) })
+  },
+  validateLicense(payload) {
+    return request('/v1/licenses/validate', { method: 'POST', body: JSON.stringify(payload) })
+  },
+  suspendLicense(id) {
+    return request(`/v1/licenses/${id}/suspend`, { method: 'POST' })
+  },
+  revokeLicense(id) {
+    return request(`/v1/licenses/${id}/revoke`, { method: 'POST' })
+  },
+  reactivateLicense(id) {
+    return request(`/v1/licenses/${id}/reactivate`, { method: 'POST' })
+  },
+  getSettlementQuota() {
+    return request('/v1/settlements/quota')
   }
 }

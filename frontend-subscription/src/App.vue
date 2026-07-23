@@ -20,6 +20,10 @@
       <RouterLink :class="{ active: route.name === 'usage' }" to="/usage">用量</RouterLink>
       <RouterLink :class="{ active: route.name === 'fx' }" to="/fx">换汇</RouterLink>
       <RouterLink :class="{ active: route.name === 'reconciliation' }" to="/reconciliation">对账</RouterLink>
+      <RouterLink :class="{ active: route.name === 'routing' }" to="/routing">路由</RouterLink>
+      <RouterLink :class="{ active: route.name === 'virtual-cards' }" to="/virtual-cards">虚拟卡</RouterLink>
+      <RouterLink :class="{ active: route.name === 'entities' }" to="/entities">主体</RouterLink>
+      <RouterLink :class="{ active: route.name === 'licenses' }" to="/licenses">密钥</RouterLink>
     </nav>
 
     <section v-if="app.error" class="notice error">{{ app.error }}</section>

@@ -13,7 +13,11 @@ const routes = [
   { path: '/payment-orders', name: 'payment-orders', component: () => import('../components/PaymentOrdersView.vue') },
   { path: '/usage', name: 'usage', component: () => import('../components/UsageView.vue') },
   { path: '/fx', name: 'fx', component: () => import('../components/FxView.vue') },
-  { path: '/reconciliation', name: 'reconciliation', component: () => import('../components/ReconciliationView.vue') }
+  { path: '/reconciliation', name: 'reconciliation', component: () => import('../components/ReconciliationView.vue') },
+  { path: '/routing', name: 'routing', component: () => import('../components/RoutingView.vue') },
+  { path: '/virtual-cards', name: 'virtual-cards', component: () => import('../components/VirtualCardsView.vue') },
+  { path: '/entities', name: 'entities', component: () => import('../components/EntitiesView.vue') },
+  { path: '/licenses', name: 'licenses', component: () => import('../components/LicensesView.vue') }
 ]
 
 export const router = createRouter({
