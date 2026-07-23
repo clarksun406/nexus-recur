@@ -116,5 +116,45 @@ export const api = {
   },
   webhookDeliveries(endpointId, page = 1, limit = 20) {
     return request(`/v1/webhook-endpoints/${endpointId}/deliveries?page=${page}&limit=${limit}`)
+  },
+  listPaymentOrders(merchantId, status = '', page = 1, limit = 20) {
+    const params = new URLSearchParams({ page, limit })
+    if (merchantId) params.set('merchantId', merchantId)
+    if (status) params.set('status', status)
+    return request(`/v1/payment-orders?${params.toString()}`)
+  },
+  createPaymentOrder(payload) {
+    return request('/v1/payment-orders', { method: 'POST', body: JSON.stringify(payload) })
+  },
+  approvePaymentOrder(id, approverId) {
+    return request(`/v1/payment-orders/${id}/approve`, { method: 'POST', body: JSON.stringify({ approverId }) })
+  },
+  rejectPaymentOrder(id, approverId) {
+    return request(`/v1/payment-orders/${id}/reject`, { method: 'POST', body: JSON.stringify({ approverId }) })
+  },
+  completePaymentOrder(id) {
+    return request(`/v1/payment-orders/${id}/complete`, { method: 'POST' })
+  },
+  reportUsage(payload) {
+    return request('/v1/usage', { method: 'POST', body: JSON.stringify(payload) })
+  },
+  listUsage(subscriptionId, page = 1, limit = 20) {
+    return request(`/v1/usage?subscriptionId=${encodeURIComponent(subscriptionId)}&page=${page}&limit=${limit}`)
+  },
+  fxExchange(merchantId, payload) {
+    return request(`/v1/fx/exchange?merchantId=${encodeURIComponent(merchantId)}`, { method: 'POST', body: JSON.stringify(payload) })
+  },
+  listFx(merchantId, page = 1, limit = 20) {
+    return request(`/v1/fx?merchantId=${encodeURIComponent(merchantId)}&page=${page}&limit=${limit}`)
+  },
+  reconciliationReport(year, month, merchantId) {
+    const params = new URLSearchParams({ year, month })
+    if (merchantId) params.set('merchantId', merchantId)
+    return request(`/v1/reconciliation/report?${params.toString()}`)
+  },
+  reconciliationExport(year, month, merchantId) {
+    const params = new URLSearchParams({ year, month })
+    if (merchantId) params.set('merchantId', merchantId)
+    window.open(`${API_BASE}/v1/reconciliation/export?${params.toString()}`, '_blank')
   }
 }

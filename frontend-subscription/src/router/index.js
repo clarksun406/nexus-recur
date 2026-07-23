@@ -9,7 +9,11 @@ const routes = [
   { path: '/wallets', name: 'wallets', component: () => import('../components/WalletView.vue') },
   { path: '/settlements', name: 'settlements', component: () => import('../components/SettlementsView.vue') },
   { path: '/entitlements', name: 'entitlements', component: () => import('../components/EntitlementsView.vue') },
-  { path: '/developer', name: 'developer', component: () => import('../components/DeveloperView.vue') }
+  { path: '/developer', name: 'developer', component: () => import('../components/DeveloperView.vue') },
+  { path: '/payment-orders', name: 'payment-orders', component: () => import('../components/PaymentOrdersView.vue') },
+  { path: '/usage', name: 'usage', component: () => import('../components/UsageView.vue') },
+  { path: '/fx', name: 'fx', component: () => import('../components/FxView.vue') },
+  { path: '/reconciliation', name: 'reconciliation', component: () => import('../components/ReconciliationView.vue') }
 ]
 
 export const router = createRouter({
