@@ -15,6 +15,7 @@
       <RouterLink :class="{ active: route.name === 'wallets' }" to="/wallets">钱包</RouterLink>
       <RouterLink :class="{ active: route.name === 'settlements' }" to="/settlements">结汇</RouterLink>
       <RouterLink :class="{ active: route.name === 'entitlements' }" to="/entitlements">权益</RouterLink>
+      <RouterLink :class="{ active: route.name === 'developer' }" to="/developer">开发者</RouterLink>
     </nav>
 
     <section v-if="app.error" class="notice error">{{ app.error }}</section>

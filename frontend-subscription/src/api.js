@@ -94,5 +94,27 @@ export const api = {
   },
   getPaymentIntent(id) {
     return request(`/v1/payments/intents/${id}`)
+  },
+  listApiKeys(userId, page = 1, limit = 20) {
+    return request(`/v1/api-keys?userId=${encodeURIComponent(userId)}&page=${page}&limit=${limit}`)
+  },
+  createApiKey(payload) {
+    return request('/v1/api-keys', { method: 'POST', body: JSON.stringify(payload) })
+  },
+  revokeApiKey(keyId) {
+    return request(`/v1/api-keys/${keyId}`, { method: 'DELETE' })
+  },
+  listWebhookEndpoints(merchantId) {
+    const query = merchantId ? `?merchantId=${encodeURIComponent(merchantId)}` : ''
+    return request(`/v1/webhook-endpoints${query}`)
+  },
+  createWebhookEndpoint(payload) {
+    return request('/v1/webhook-endpoints', { method: 'POST', body: JSON.stringify(payload) })
+  },
+  updateWebhookEndpoint(id, payload) {
+    return request(`/v1/webhook-endpoints/${id}`, { method: 'PUT', body: JSON.stringify(payload) })
+  },
+  webhookDeliveries(endpointId, page = 1, limit = 20) {
+    return request(`/v1/webhook-endpoints/${endpointId}/deliveries?page=${page}&limit=${limit}`)
   }
 }

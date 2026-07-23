@@ -8,7 +8,8 @@ const routes = [
   { path: '/subscriptions/:id', name: 'subscription-detail', component: () => import('../components/SubscriptionDetailView.vue') },
   { path: '/wallets', name: 'wallets', component: () => import('../components/WalletView.vue') },
   { path: '/settlements', name: 'settlements', component: () => import('../components/SettlementsView.vue') },
-  { path: '/entitlements', name: 'entitlements', component: () => import('../components/EntitlementsView.vue') }
+  { path: '/entitlements', name: 'entitlements', component: () => import('../components/EntitlementsView.vue') },
+  { path: '/developer', name: 'developer', component: () => import('../components/DeveloperView.vue') }
 ]
 
 export const router = createRouter({
