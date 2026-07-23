@@ -63,13 +63,18 @@ subscription-service (port 8080)          payment-gateway (port 8081)
 - Payment Methods: list/create/set-default/revoke (`/v1/customers/{id}/payment-methods`)
 - Refunds: create/approve/list (`/v1/refunds`)
 - Wallets: multi-currency balance + freeze/unfreeze + transactions (`/v1/wallets`)
-- FX Exchange: 13 种货币换汇，50bps 点差，异常保护 (`/v1/fx`)
+- FX Exchange: 23 种货币换汇，50bps 点差，异常保护 (`/v1/fx`)
 - Payment Orders: SEPA/ACH/Wire 付款，制裁筛查，>$5K 审批 (`/v1/payment-orders`)
 - Merchants: 注册 + KYC 审核 + 自动开 8 币种钱包 (`/v1/merchants`)
-- Settlements: 结汇发起/审批/拒绝/完成，>$10K 需审批 (`/v1/settlements`)
+- Settlements: 结汇发起/审批/拒绝/完成，>$10K 需审批，批量结汇，合规导出，额度管理 (`/v1/settlements`)
 - Reconciliation: 月度对账报告 + CSV 导出 (`/v1/reconciliation`)
 - Customer Portal: 魔法链接登录 + 订阅/发票/支付方式自助管理 (`/v1/portal`)
 - Developer Center: Webhook 端点 CRUD + 投递日志 (`/v1/webhook-endpoints`)
+- Smart Routing: 多策略路由（priority/weighted/cost/success-rate）+ 条件匹配 (`/v1/routing-rules`)
+- Virtual Cards: 虚拟卡发行/冻结/关闭 + 消费限额 (`/v1/virtual-cards`)
+- Legal Entities: 多主体管理 + 商户分配 (`/v1/legal-entities`)
+- License Keys: 密钥生成/校验/设备绑定/暂停/吊销 (`/v1/licenses`)
+- Plan Tiers: 分层定价阶梯管理 (`/v1/plans/{id}/tiers`)
 - Dashboard: MRR, charge success rate, pending actions (`/v1/dashboard/stats`)
 - Webhooks: inbound (subscription events) + outbound (event delivery with retry)
 - API Keys: generate/list/revoke (`/v1/api-keys`)
@@ -126,7 +131,7 @@ Vue 3 + Pinia + Vue Router. Views:
 
 ## Database
 
-PostgreSQL (prod), H2 (test). Flyway migrations in `backend/subscription-service/src/main/resources/db/migration/` (V1-V10).
+PostgreSQL (prod), H2 (test). Flyway migrations in `backend/subscription-service/src/main/resources/db/migration/` (V1-V14).
 
 ```text
 DB_URL=jdbc:postgresql://localhost:5432/nexus_recur
@@ -145,5 +150,5 @@ X-Webhook-Signature: <hex hmac-sha256(rawBody, webhookSecret)>
 ## Tests
 
 ```bash
-mvn clean test   # runs all modules (54 tests total)
+mvn clean test   # runs all modules (65 tests total)
 ```

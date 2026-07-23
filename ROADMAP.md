@@ -26,9 +26,7 @@
 
 ### 完全缺失
 
-- 结汇回国通道（F16-F20）— 0%
-- License Key 管理（F28）— 0%
-- 自动重试与 dunning（F04, F06）— 0%
+- 自动重试与 dunning（F06）— 0%
 - 税务计算（Ch5）— 0%
 
 ---
@@ -294,21 +292,21 @@ permission:
 | 开发者中心 | F25 | API Key 管理，Webhook 配置 UI，调用日志，交互式文档 | ✅ |
 | 扩展币种 | F15 部分 | 扩展至 10+ 币种 | ✅ |
 
-### Phase 4 — GA（Week 25-36）
+### Phase 4 — GA（Week 25-36）🚧 IN PROGRESS
 
 > PRD 里程碑：GA 上线。
 
-| 工作项 | PRD 对应 | 验收标准 |
-|--------|----------|----------|
-| 智能路由 | F08 | 多收单机构接入，BIN/地区/历史成功率路由策略 |
-| 分层定价 | F09 | tiered 定价、阶梯价、组合定价 |
-| 企业虚拟卡 | F14 | Visa 虚拟卡，消费限额，品类限制，实时通知 |
-| 扩展至 20+ 币种 | F15 | CAD/AUD/JPY/SGD/HKD 等 |
-| 批量结汇 | F19 | 批量发起，自动拆分合规申报 |
-| 结汇额度管理 | F20 | 对接 SAFE 额度系统，实时可用额度 |
-| 多主体管理 | F26 | 多公司主体，按主体数据隔离，主体间调拨 |
-| License Key 管理 | F28 | 密钥全生命周期，设备绑定，在线/离线校验 |
-| 合规申报数据导出 | F18 | 月/季外汇申报数据导出 |
+| 工作项 | PRD 对应 | 验收标准 | 状态 |
+|--------|----------|----------|------|
+| 智能路由 | F08 | 多收单机构接入，BIN/地区/历史成功率路由策略 | ✅ |
+| 分层定价 | F09 | tiered 定价、阶梯价、组合定价 | ✅ |
+| 企业虚拟卡 | F14 | Visa 虚拟卡，消费限额，品类限制，实时通知 | ✅ |
+| 扩展至 20+ 币种 | F15 | CAD/AUD/JPY/SGD/HKD 等 | ✅ |
+| 批量结汇 | F19 | 批量发起，自动拆分合规申报 | ✅ |
+| 结汇额度管理 | F20 | 对接 SAFE 额度系统，实时可用额度 | ✅ |
+| 多主体管理 | F26 | 多公司主体，按主体数据隔离，主体间调拨 | ✅ |
+| License Key 管理 | F28 | 密钥全生命周期，设备绑定，在线/离线校验 | ✅ |
+| 合规申报数据导出 | F18 | 月/季外汇申报数据导出 | ✅ |
 
 ---
 
@@ -331,7 +329,7 @@ P0 功能是 MVP 的硬性门槛，必须在 Phase 1 全部完成。
 | PaymentGatewayClient 双适配器 | Mock（默认）/ Rest（调用 payment-gateway），@ConditionalOnProperty 切换 |
 | flow-permission-client 集成 | @CheckPermission 注解已加到所有 Controller，permission.enabled=false 时 no-op |
 | 出站 Webhook 框架 | 15 种事件类型、指数退避重试、HMAC 签名 |
-| Flyway 迁移 | V1-V10（init → wallet → next_retry → settlements → merchants → audit_logs → data_model_completion → fx_transactions → portal_tokens → payment_orders），生产 validate 模式 |
+| Flyway 迁移 | V1-V14（init → wallet → next_retry → settlements → merchants → audit_logs → data_model_completion → fx_transactions → portal_tokens → payment_orders → license_keys → routing_rules → virtual_cards → legal_entities），生产 validate 模式 |
 | 前端脚手架 | Vue Router + Pinia + 6 个视图（含结汇）+ 响应式 CSS |
 | MIT 计费引擎 | 续期扣款 + 试用转付费 + 1/3/7/14 重试 + Dunning 3 封邮件 + 税务计算 |
 | 审计日志 | AuditFilter（POST/PUT/DELETE 敏感路径）+ AuditLog 实体 + 查询 API |
@@ -344,7 +342,15 @@ P0 功能是 MVP 的硬性门槛，必须在 Phase 1 全部完成。
 | 客户自助门户（F27） | 魔法链接（5 分钟有效 + 单次使用）+ 1 小时会话 + 查看订阅/发票/支付方式 + 取消/恢复订阅 |
 | 同币种付款（F12） | PaymentOrder 实体 + SEPA/ACH/Wire + 制裁筛查（14 国 + 关键词）+ >$5K Owner 审批 + 钱包冻结联动 |
 | 开发者中心（F25） | Webhook 端点 CRUD API + 投递日志分页 + 前端 DeveloperView（API Keys + Webhooks 双 tab） |
-| 扩展币种（F15） | 13 种 ISO 4217 货币 + USD 基准动态交叉汇率 + SupportedCurrencies 校验 + KYC 自动开 8 币种钱包 |
+| 扩展币种（F15） | 23 种 ISO 4217 货币 + USD 基准动态交叉汇率 + SupportedCurrencies 校验 + KYC 自动开 8 币种钱包 |
+| 分层定价（F09） | PlanTier 实体 + 阶梯价 CRUD API + 前端 tier 管理面板 |
+| License Key（F28） | XXXX-XXXX-XXXX-XXXX 格式 + 设备绑定 + 激活次数限制 + suspend/revoke/reactivate |
+| 批量结汇（F19） | POST /v1/settlements/batch（最多 50 笔/批）|
+| 合规申报（F18） | GET /v1/settlements/compliance-export 季度 CSV 导出 |
+| 结汇额度（F20） | $5M 年度 SAFE 额度追踪 + GET /v1/settlements/quota |
+| 智能路由（F08） | RoutingRule 实体 + priority/weighted/cost_optimized/success_rate 策略 + 条件匹配（currency/amount/region）|
+| 虚拟卡（F14） | VirtualCard 实体 + 消费限额 + freeze/unfreeze/close 生命周期 + spend 记录 |
+| 多主体（F26） | LegalEntity 实体 + Merchant.legalEntityId 关联 + 按国家筛选 + 商户分配 |
 
 ---
 
