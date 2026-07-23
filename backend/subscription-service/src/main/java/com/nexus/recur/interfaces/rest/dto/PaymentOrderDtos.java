@@ -2,6 +2,7 @@ package com.nexus.recur.interfaces.rest.dto;
 
 import com.nexus.recur.domain.model.PayoutMethod;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.time.OffsetDateTime;
 
@@ -13,7 +14,7 @@ public final class PaymentOrderDtos {
             @NotBlank String walletId,
             @NotBlank String currency,
             @Positive long amountCents,
-            @NotBlank PayoutMethod method,
+            @NotNull PayoutMethod method,
             @NotBlank String beneficiaryName,
             @NotBlank String beneficiaryAccount,
             String beneficiaryBank,
