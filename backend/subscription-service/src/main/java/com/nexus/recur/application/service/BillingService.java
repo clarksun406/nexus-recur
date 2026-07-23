@@ -1,10 +1,13 @@
 package com.nexus.recur.application.service;
 
 import com.nexus.recur.application.port.PaymentGatewayClient;
+import com.nexus.recur.domain.model.RetryLog;
 import com.nexus.recur.domain.model.Subscription;
 import com.nexus.recur.domain.model.SubscriptionPlan;
 import com.nexus.recur.domain.model.SubscriptionStatus;
+import com.nexus.recur.domain.repository.RetryLogRepository;
 import com.nexus.recur.domain.repository.SubscriptionRepository;
+import com.nexus.recur.infrastructure.support.IdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,17 +28,23 @@ public class BillingService {
     private final PlanService planService;
     private final SubscriptionService subscriptionService;
     private final EventService eventService;
+    private final RetryLogRepository retryLogRepository;
+    private final IdGenerator idGenerator;
 
     public BillingService(SubscriptionRepository subscriptionRepository,
                           PaymentGatewayClient paymentGatewayClient,
                           PlanService planService,
                           SubscriptionService subscriptionService,
-                          EventService eventService) {
+                          EventService eventService,
+                          RetryLogRepository retryLogRepository,
+                          IdGenerator idGenerator) {
         this.subscriptionRepository = subscriptionRepository;
         this.paymentGatewayClient = paymentGatewayClient;
         this.planService = planService;
         this.subscriptionService = subscriptionService;
         this.eventService = eventService;
+        this.retryLogRepository = retryLogRepository;
+        this.idGenerator = idGenerator;
     }
 
     @Transactional
@@ -123,10 +132,18 @@ public class BillingService {
         subscription.setRetryCount(newRetryCount);
         subscription.setLastDeclineCode(result.declineCode());
 
+        RetryLog retryLog = new RetryLog();
+        retryLog.setId(idGenerator.next("rtl"));
+        retryLog.setSubscriptionId(subscription.getId());
+        retryLog.setAttemptNumber(newRetryCount);
+        retryLog.setAttemptedAt(OffsetDateTime.now());
+        retryLog.setDeclineCode(result.declineCode());
+
         if (!result.retryable() || newRetryCount >= MAX_RETRIES) {
             subscriptionService.markStatus(subscription, SubscriptionStatus.canceled, null);
             subscription.setNextRetryAt(null);
             subscriptionRepository.save(subscription);
+            retryLogRepository.save(retryLog);
             log.warn("Subscription {} canceled after {} retries (declineCode={})",
                     subscription.getId(), newRetryCount, result.declineCode());
             eventService.record(subscription.getId(), "canceled_after_retries", "scheduler", null);
@@ -137,6 +154,8 @@ public class BillingService {
             int delayDays = RETRY_SCHEDULE_DAYS[Math.min(newRetryCount, RETRY_SCHEDULE_DAYS.length - 1)];
             subscription.setNextRetryAt(OffsetDateTime.now().plusDays(delayDays));
             subscriptionRepository.save(subscription);
+            retryLog.setNextRetryAt(subscription.getNextRetryAt());
+            retryLogRepository.save(retryLog);
             log.info("Subscription {} marked past_due, retry #{} scheduled in {} days",
                     subscription.getId(), newRetryCount, delayDays);
             eventService.record(subscription.getId(), "charge_failed", "scheduler", null);

@@ -43,6 +43,7 @@ public class MerchantService {
             throw new BusinessException("INVALID_KYC_STATE", "KYC already submitted or approved");
         }
         merchant.setKycStatus(KycStatus.submitted);
+        merchant.setKycSubmittedAt(OffsetDateTime.now());
         return merchantRepository.save(merchant);
     }
 
@@ -72,6 +73,7 @@ public class MerchantService {
             throw new BusinessException("INVALID_KYC_STATE", "KYC not in submitted state");
         }
         merchant.setKycStatus(KycStatus.rejected);
+        merchant.setKycRejectedReason(reason);
         return merchantRepository.save(merchant);
     }
 

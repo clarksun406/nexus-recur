@@ -14,7 +14,8 @@ import java.time.OffsetDateTime;
 @Table(name = "subscriptions", indexes = {
         @Index(name = "idx_user_id", columnList = "userId"),
         @Index(name = "idx_status", columnList = "status"),
-        @Index(name = "idx_period_end", columnList = "currentPeriodEnd")
+        @Index(name = "idx_period_end", columnList = "currentPeriodEnd"),
+        @Index(name = "idx_sub_merchant", columnList = "merchantId")
 })
 public class Subscription {
     @Id
@@ -46,6 +47,15 @@ public class Subscription {
     private OffsetDateTime nextRetryAt;
     @Column(length = 64)
     private String paymentMethodId;
+    @Column(length = 64)
+    private String merchantId;
+    @Column(length = 32)
+    private String customerId;
+    private int quantity = 1;
+    private OffsetDateTime startDate;
+    @Column(length = 32)
+    private String collectionMethod;
+    private Integer daysUntilDue;
     @Column(nullable = false)
     private OffsetDateTime createdAt = OffsetDateTime.now();
     @Column(nullable = false)
@@ -90,6 +100,18 @@ public class Subscription {
     public void setNextRetryAt(OffsetDateTime nextRetryAt) { this.nextRetryAt = nextRetryAt; }
     public String getPaymentMethodId() { return paymentMethodId; }
     public void setPaymentMethodId(String paymentMethodId) { this.paymentMethodId = paymentMethodId; }
+    public String getMerchantId() { return merchantId; }
+    public void setMerchantId(String merchantId) { this.merchantId = merchantId; }
+    public String getCustomerId() { return customerId; }
+    public void setCustomerId(String customerId) { this.customerId = customerId; }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public OffsetDateTime getStartDate() { return startDate; }
+    public void setStartDate(OffsetDateTime startDate) { this.startDate = startDate; }
+    public String getCollectionMethod() { return collectionMethod; }
+    public void setCollectionMethod(String collectionMethod) { this.collectionMethod = collectionMethod; }
+    public Integer getDaysUntilDue() { return daysUntilDue; }
+    public void setDaysUntilDue(Integer daysUntilDue) { this.daysUntilDue = daysUntilDue; }
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
     public OffsetDateTime getUpdatedAt() { return updatedAt; }

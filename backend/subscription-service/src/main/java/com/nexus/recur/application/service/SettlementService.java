@@ -58,10 +58,13 @@ public class SettlementService {
 
         boolean requiresApproval = request.amountCents() > APPROVAL_THRESHOLD_CENTS;
         settlement.setStatus(requiresApproval ? SettlementStatus.pending : SettlementStatus.approved);
+        settlement.setInitiatedBy(merchantId);
+        settlement.setComplianceStatus(ComplianceStatus.pending);
 
         if (!requiresApproval) {
             settlement.setApprovedBy("auto");
             settlement.setApprovedAt(OffsetDateTime.now());
+            settlement.setComplianceStatus(ComplianceStatus.cleared);
         }
 
         settlementRepository.save(settlement);
@@ -83,6 +86,7 @@ public class SettlementService {
         settlement.setStatus(SettlementStatus.approved);
         settlement.setApprovedBy(approverId);
         settlement.setApprovedAt(OffsetDateTime.now());
+        settlement.setComplianceStatus(ComplianceStatus.cleared);
         settlementRepository.save(settlement);
         return toResponse(settlement);
     }

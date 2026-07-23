@@ -335,12 +335,13 @@ P0 功能是 MVP 的硬性门槛，必须在 Phase 1 全部完成。
 | PaymentGatewayClient 双适配器 | Mock（默认）/ Rest（调用 payment-gateway），@ConditionalOnProperty 切换 |
 | flow-permission-client 集成 | @CheckPermission 注解已加到所有 Controller，permission.enabled=false 时 no-op |
 | 出站 Webhook 框架 | 15 种事件类型、指数退避重试、HMAC 签名 |
-| Flyway 迁移 | V1-V6（init → wallet → next_retry → settlements → merchants → audit_logs），生产 validate 模式 |
+| Flyway 迁移 | V1-V7（init → wallet → next_retry → settlements → merchants → audit_logs → data_model_completion），生产 validate 模式 |
 | 前端脚手架 | Vue Router + Pinia + 6 个视图（含结汇）+ 响应式 CSS |
 | MIT 计费引擎 | 续期扣款 + 试用转付费 + 1/3/7/14 重试 + Dunning 3 封邮件 + 税务计算 |
 | 审计日志 | AuditFilter（POST/PUT/DELETE 敏感路径）+ AuditLog 实体 + 查询 API |
 | 可观测性 | Spring Boot Actuator：health/info/metrics/prometheus |
 | 安全加固 | RateLimitFilter (120 req/min/IP) + SecurityHeadersFilter (CSP/HSTS/nosniff/X-Frame DENY) |
+| 数据模型补全 | V7：Customer/PaymentMethod/Refund/UsageRecord/InvoiceLineItem/TaxRate/PlanTier/RetryLog 8 张新表 + Subscription/Invoice/Wallet/Settlement/Merchant 5 表字段扩展，支撑 F02/F05/F09/F27/Ch5 |
 
 ---
 

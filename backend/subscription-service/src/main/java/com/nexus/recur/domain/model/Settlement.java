@@ -2,6 +2,7 @@ package com.nexus.recur.domain.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -48,6 +49,25 @@ public class Settlement {
     @Column(length = 256)
     private String rejectionReason;
 
+    @Column(precision = 18, scale = 8)
+    private BigDecimal exchangeRate;
+
+    private Long feeAmountCents;
+
+    private Long netAmountCents;
+
+    private OffsetDateTime expectedArrivalAt;
+
+    @Column(length = 64)
+    private String referenceNumber;
+
+    @Column(length = 64)
+    private String initiatedBy;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 16)
+    private ComplianceStatus complianceStatus;
+
     @Column(nullable = false)
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
@@ -77,6 +97,20 @@ public class Settlement {
     public void setBackgroundRefs(String backgroundRefs) { this.backgroundRefs = backgroundRefs; }
     public String getRejectionReason() { return rejectionReason; }
     public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
+    public BigDecimal getExchangeRate() { return exchangeRate; }
+    public void setExchangeRate(BigDecimal exchangeRate) { this.exchangeRate = exchangeRate; }
+    public Long getFeeAmountCents() { return feeAmountCents; }
+    public void setFeeAmountCents(Long feeAmountCents) { this.feeAmountCents = feeAmountCents; }
+    public Long getNetAmountCents() { return netAmountCents; }
+    public void setNetAmountCents(Long netAmountCents) { this.netAmountCents = netAmountCents; }
+    public OffsetDateTime getExpectedArrivalAt() { return expectedArrivalAt; }
+    public void setExpectedArrivalAt(OffsetDateTime expectedArrivalAt) { this.expectedArrivalAt = expectedArrivalAt; }
+    public String getReferenceNumber() { return referenceNumber; }
+    public void setReferenceNumber(String referenceNumber) { this.referenceNumber = referenceNumber; }
+    public String getInitiatedBy() { return initiatedBy; }
+    public void setInitiatedBy(String initiatedBy) { this.initiatedBy = initiatedBy; }
+    public ComplianceStatus getComplianceStatus() { return complianceStatus; }
+    public void setComplianceStatus(ComplianceStatus complianceStatus) { this.complianceStatus = complianceStatus; }
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
     public OffsetDateTime getCompletedAt() { return completedAt; }

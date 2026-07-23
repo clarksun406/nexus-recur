@@ -37,6 +37,24 @@ public class Wallet {
     @Column(nullable = false)
     private WalletStatus status = WalletStatus.active;
 
+    @Column(name = "account_number", length = 64)
+    private String accountNumber;
+
+    @Column(name = "routing_number", length = 32)
+    private String routingNumber;
+
+    @Column(length = 34)
+    private String iban;
+
+    @Column(name = "swift_code", length = 11)
+    private String swiftCode;
+
+    @Column(name = "bank_name", length = 64)
+    private String bankName;
+
+    @Column(name = "account_holder_name", length = 128)
+    private String accountHolderName;
+
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 
@@ -67,6 +85,18 @@ public class Wallet {
     public void setPendingBalanceCents(int pendingBalanceCents) { this.pendingBalanceCents = pendingBalanceCents; }
     public WalletStatus getStatus() { return status; }
     public void setStatus(WalletStatus status) { this.status = status; }
+    public String getAccountNumber() { return accountNumber; }
+    public void setAccountNumber(String accountNumber) { this.accountNumber = accountNumber; }
+    public String getRoutingNumber() { return routingNumber; }
+    public void setRoutingNumber(String routingNumber) { this.routingNumber = routingNumber; }
+    public String getIban() { return iban; }
+    public void setIban(String iban) { this.iban = iban; }
+    public String getSwiftCode() { return swiftCode; }
+    public void setSwiftCode(String swiftCode) { this.swiftCode = swiftCode; }
+    public String getBankName() { return bankName; }
+    public void setBankName(String bankName) { this.bankName = bankName; }
+    public String getAccountHolderName() { return accountHolderName; }
+    public void setAccountHolderName(String accountHolderName) { this.accountHolderName = accountHolderName; }
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public OffsetDateTime getUpdatedAt() { return updatedAt; }
 }
