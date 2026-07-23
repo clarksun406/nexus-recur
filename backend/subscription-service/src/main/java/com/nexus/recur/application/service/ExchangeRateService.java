@@ -27,7 +27,17 @@ public class ExchangeRateService {
             Map.entry("SEK", new BigDecimal("10.650")),
             Map.entry("NOK", new BigDecimal("10.850")),
             Map.entry("DKK", new BigDecimal("6.8600")),
-            Map.entry("NZD", new BigDecimal("1.6400"))
+            Map.entry("NZD", new BigDecimal("1.6400")),
+            Map.entry("CNY", new BigDecimal("7.2500")),
+            Map.entry("INR", new BigDecimal("83.500")),
+            Map.entry("BRL", new BigDecimal("5.4500")),
+            Map.entry("MXN", new BigDecimal("17.150")),
+            Map.entry("ZAR", new BigDecimal("18.200")),
+            Map.entry("KRW", new BigDecimal("1345.0")),
+            Map.entry("TWD", new BigDecimal("32.400")),
+            Map.entry("PLN", new BigDecimal("3.9800")),
+            Map.entry("THB", new BigDecimal("36.200")),
+            Map.entry("ILS", new BigDecimal("3.7200"))
     );
 
     public record QuoteResult(BigDecimal rate, int spreadBps, BigDecimal targetAmount) {}

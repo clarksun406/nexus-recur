@@ -7,7 +7,9 @@ public final class SupportedCurrencies {
 
     public static final Set<String> ALL = Set.of(
             "USD", "EUR", "GBP", "CAD", "AUD", "JPY",
-            "SGD", "HKD", "CHF", "SEK", "NOK", "DKK", "NZD"
+            "SGD", "HKD", "CHF", "SEK", "NOK", "DKK", "NZD",
+            "CNY", "INR", "BRL", "MXN", "ZAR", "KRW", "TWD",
+            "PLN", "THB", "ILS"
     );
 
     public static boolean isSupported(String code) {
