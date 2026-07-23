@@ -60,9 +60,38 @@
           <span><mark :class="plan.status">{{ plan.status }}</mark></span>
           <span>
             <button :disabled="plan.status === 'archived'" @click="planStore.archivePlan(plan.id)">下架</button>
+            <button @click="selectPlan(plan)">阶梯</button>
           </span>
         </div>
       </div>
+    </div>
+
+    <div v-if="selectedPlan" class="panel">
+      <div class="panel-head">
+        <h2>阶梯定价 — {{ selectedPlan.name }}</h2>
+        <button @click="selectedPlan = null">关闭</button>
+      </div>
+      <div class="row" style="gap:.5rem;margin-bottom:1rem;align-items:end;flex-wrap:wrap">
+        <div><label>起始量</label><input v-model.number="tierForm.tierStart" type="number" min="0" style="width:5rem" /></div>
+        <div><label>结束量</label><input v-model.number="tierForm.tierEnd" type="number" min="0" placeholder="∞" style="width:5rem" /></div>
+        <div><label>单价(分)</label><input v-model.number="tierForm.unitAmountCents" type="number" min="0" style="width:5rem" /></div>
+        <div><label>固定费(分)</label><input v-model.number="tierForm.flatAmountCents" type="number" min="0" style="width:5rem" /></div>
+        <button class="btn" @click="addTier">添加阶梯</button>
+      </div>
+      <p v-if="tierError" class="negative">{{ tierError }}</p>
+      <table v-if="tiers.length">
+        <thead><tr><th>起始</th><th>结束</th><th>单价(分)</th><th>固定费(分)</th><th>操作</th></tr></thead>
+        <tbody>
+          <tr v-for="t in tiers" :key="t.id">
+            <td>{{ t.tierStart }}</td>
+            <td>{{ t.tierEnd ?? '∞' }}</td>
+            <td>{{ t.unitAmountCents }}</td>
+            <td>{{ t.flatAmountCents }}</td>
+            <td><button class="btn-sm" @click="deleteTier(t.id)">删除</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <p v-if="!tiers.length && !tierError" class="row empty">无阶梯配置。</p>
     </div>
   </section>
 </template>
@@ -71,6 +100,7 @@
 import { reactive, ref, onMounted } from 'vue'
 import { useAppStore } from '../stores/app'
 import { usePlanStore } from '../stores/plan'
+import { api } from '../api'
 
 const app = useAppStore()
 const planStore = usePlanStore()
@@ -86,9 +116,48 @@ const planForm = reactive({
 })
 const featuresJson = ref('{"max_api_calls":10000,"storage_gb":50,"premium_support":true}')
 
+const selectedPlan = ref(null)
+const tiers = ref([])
+const tierError = ref('')
+const tierForm = reactive({ tierStart: 0, tierEnd: null, unitAmountCents: 0, flatAmountCents: 0 })
+
 async function createPlan() {
   const features = JSON.parse(featuresJson.value || '{}')
   await planStore.createPlan({ ...planForm, features, status: 'active' })
+}
+
+async function selectPlan(plan) {
+  selectedPlan.value = plan
+  tierError.value = ''
+  await loadTiers()
+}
+
+async function loadTiers() {
+  try {
+    tiers.value = await api.listPlanTiers(selectedPlan.value.id)
+  } catch (e) { tierError.value = e.message }
+}
+
+async function addTier() {
+  tierError.value = ''
+  try {
+    await api.createPlanTier(selectedPlan.value.id, {
+      planId: selectedPlan.value.id,
+      tierStart: tierForm.tierStart,
+      tierEnd: tierForm.tierEnd || null,
+      unitAmountCents: tierForm.unitAmountCents,
+      flatAmountCents: tierForm.flatAmountCents
+    })
+    await loadTiers()
+  } catch (e) { tierError.value = e.message }
+}
+
+async function deleteTier(tierId) {
+  tierError.value = ''
+  try {
+    await api.deletePlanTier(selectedPlan.value.id, tierId)
+    await loadTiers()
+  } catch (e) { tierError.value = e.message }
 }
 
 onMounted(() => {

@@ -156,5 +156,14 @@ export const api = {
     const params = new URLSearchParams({ year, month })
     if (merchantId) params.set('merchantId', merchantId)
     window.open(`${API_BASE}/v1/reconciliation/export?${params.toString()}`, '_blank')
+  },
+  listPlanTiers(planId) {
+    return request(`/v1/plans/${planId}/tiers`)
+  },
+  createPlanTier(planId, payload) {
+    return request(`/v1/plans/${planId}/tiers`, { method: 'POST', body: JSON.stringify(payload) })
+  },
+  deletePlanTier(planId, tierId) {
+    return request(`/v1/plans/${planId}/tiers/${tierId}`, { method: 'DELETE' })
   }
 }
