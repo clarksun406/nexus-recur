@@ -1,5 +1,6 @@
 package com.nexus.recur.application.service;
 
+import com.nexus.recur.domain.model.BillingType;
 import com.nexus.recur.domain.model.Subscription;
 import com.nexus.recur.domain.model.SubscriptionStatus;
 import com.nexus.recur.domain.repository.SubscriptionRepository;
@@ -18,15 +19,21 @@ public class SubscriptionScheduler {
     private final SubscriptionRepository subscriptionRepository;
     private final SubscriptionService subscriptionService;
     private final BillingService billingService;
+    private final UsageBillingService usageBillingService;
+    private final PlanService planService;
     private final EventService eventService;
 
     public SubscriptionScheduler(SubscriptionRepository subscriptionRepository,
                                   SubscriptionService subscriptionService,
                                   BillingService billingService,
+                                  UsageBillingService usageBillingService,
+                                  PlanService planService,
                                   EventService eventService) {
         this.subscriptionRepository = subscriptionRepository;
         this.subscriptionService = subscriptionService;
         this.billingService = billingService;
+        this.usageBillingService = usageBillingService;
+        this.planService = planService;
         this.eventService = eventService;
     }
 
@@ -86,6 +93,31 @@ public class SubscriptionScheduler {
                 billingService.retryCharge(subscription);
             } catch (Exception e) {
                 log.error("Retry failed for subscription {}: {}", subscription.getId(), e.getMessage());
+            }
+        }
+    }
+
+    @Scheduled(cron = "0 20 0 * * *")
+    @Transactional
+    public void processUsageSettlement() {
+        List<Subscription> due = subscriptionRepository
+                .findByStatusAndCurrentPeriodEndBefore(SubscriptionStatus.active, OffsetDateTime.now());
+        if (due.isEmpty()) return;
+
+        List<Subscription> metered = due.stream()
+                .filter(sub -> {
+                    var plan = planService.getEntity(sub.getPlanId());
+                    return plan.getBillingType() == BillingType.metered || plan.getBillingType() == BillingType.tiered;
+                })
+                .toList();
+        if (metered.isEmpty()) return;
+
+        log.info("processing {} metered/tiered subscriptions for usage settlement", metered.size());
+        for (Subscription subscription : metered) {
+            try {
+                usageBillingService.settleUsage(subscription);
+            } catch (Exception e) {
+                log.error("Usage settlement failed for subscription {}: {}", subscription.getId(), e.getMessage());
             }
         }
     }
